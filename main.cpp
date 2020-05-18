@@ -7,6 +7,12 @@
 
 int main() {
     using namespace std;
+    
+    Stack<int> stack("Teeeest    werjoi 2q3 r 23r 23 52 35 1  11 1 1 1  1    11   111    \n     ");
+    cout << "|" << stack.get_calculation() << "|" << endl;
+    
+    
+    
     //vector<int> values;
     //for (int i = 1; i <= 5; i++)
     //    values.push_back(i);

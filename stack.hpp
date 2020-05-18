@@ -45,6 +45,8 @@ public:
     
     void set_calculation(std::string s);
     
+    std::string get_calculation();
+    
     void push(T val);
     
     T top();
@@ -73,8 +75,9 @@ bool Stack<T>::only_one_element_left() {
 
 template <typename T>
 void Stack<T>::remove_unnecessary_whitespace() {
-    std::string::iterator new_end = std::unique(_calculation.begin(), _calculation.end(), both_are_spaces);
-    _calculation.erase(new_end, _calculation.end());
+    std::string::iterator new_end = std::unique(_calculation.begin(), _calculation.end(), both_are_spaces); // removes all non-single spaces
+    _calculation.erase(new_end, _calculation.end()); // shortens the string
+    _calculation.erase(_calculation.find_last_not_of(" \n\r\t")+1); //removes whitespace at the end of _calculation
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -104,6 +107,11 @@ Stack<T>::~Stack() {
 template <typename T>
 void Stack<T>::set_calculation(std::string s) {
     _calculation = std::move(s);
+}
+
+template <typename T>
+std::string Stack<T>::get_calculation() {
+    return _calculation;
 }
 
 template <typename T>
