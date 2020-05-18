@@ -1,9 +1,12 @@
 #include <iostream>
 #include "stack.hpp"
 #include <vector>
+#include <algorithm>
+
+
 
 int main() {
-    //using namespace std;
+    using namespace std;
     //vector<int> values;
     //for (int i = 1; i <= 5; i++)
     //    values.push_back(i);
