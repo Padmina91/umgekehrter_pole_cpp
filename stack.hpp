@@ -293,6 +293,7 @@ Stack<T>::Stack(std::string calculation_input, std::string type_name) {
 template <typename T>
 void Stack<T>::set_calculation(std::string calculation_input, std::string type_name) {
     _calculation = std::move(calculation_input);
+    remove_unnecessary_whitespace();
     if (type_name == "int" || type_name == "unsigned" || type_name == "float" || type_name == "double") {
         _type_name = std::move(type_name);
     } else {
