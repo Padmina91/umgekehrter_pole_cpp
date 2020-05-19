@@ -40,6 +40,8 @@ private:
     
     void push(const std::string& single_op);
     
+    void push(T val);
+    
     T top();
     
     T pop();
@@ -59,12 +61,9 @@ public:
 // ----------------------------------------------------------------------------------------------------
     explicit Stack(std::string calculation_input, std::string type_name);
     
-    ~Stack();
-    
     void set_calculation(std::string calculation_input, std::string type_name);
     
     std::string get_calculation();
-    
     
     void print_current_stack();
 
@@ -106,11 +105,10 @@ void Stack<T>::remove_unnecessary_whitespace() {
 
 template <typename T>
 std::string Stack<T>::extract_single_op() {
-    using namespace std;
-    string s;
+    std::string s;
     if (!_calculation.empty()) {
         size_t position = _calculation.find_first_of(' ');
-        if (position == string::npos) {
+        if (position == std::string::npos) {
             s = _calculation;
             _calculation.clear();
         }
@@ -123,7 +121,6 @@ std::string Stack<T>::extract_single_op() {
 template <typename T>
 bool Stack<T>::is_correct_operand(std::string& s) {
     bool correct_operand = true;
-    using namespace std;
     if (_type_name == "int" || _type_name == "unsigned") {
         for (int i = 0; i <s.size(); i++) {
             if (s[i] > '9' || s[i] < '0') {
@@ -153,15 +150,14 @@ bool Stack<T>::is_correct_operator(std::string& s) {
 
 template <typename T>
 void Stack<T>::push(const std::string& single_op) {
-    using namespace std;
     if (_type_name == "int") {
         try {
             _values.push_back(stoi(single_op));
-        } catch (invalid_argument&) {
+        } catch (std::invalid_argument&) {
             _calculation.clear();
             _values.clear();
             throw InvalidNumberException();
-        } catch (out_of_range&) {
+        } catch (std::out_of_range&) {
             _calculation.clear();
             _values.clear();
             throw InvalidNumberException();
@@ -170,11 +166,11 @@ void Stack<T>::push(const std::string& single_op) {
     if (_type_name == "unsigned") {
         try {
             _values.push_back(stoul(single_op));
-        } catch (invalid_argument&) {
+        } catch (std::invalid_argument&) {
             _calculation.clear();
             _values.clear();
             throw InvalidNumberException();
-        } catch (out_of_range&) {
+        } catch (std::out_of_range&) {
             _calculation.clear();
             _values.clear();
             throw InvalidNumberException();
@@ -183,11 +179,11 @@ void Stack<T>::push(const std::string& single_op) {
     if (_type_name == "float") {
         try {
             _values.push_back(stof(single_op));
-        } catch (invalid_argument&) {
+        } catch (std::invalid_argument&) {
             _calculation.clear();
             _values.clear();
             throw InvalidNumberException();
-        } catch (out_of_range&) {
+        } catch (std::out_of_range&) {
             _calculation.clear();
             _values.clear();
             throw InvalidNumberException();
@@ -196,16 +192,21 @@ void Stack<T>::push(const std::string& single_op) {
     if (_type_name == "double") {
         try {
             _values.push_back(stod(single_op));
-        } catch (invalid_argument&) {
+        } catch (std::invalid_argument&) {
             _calculation.clear();
             _values.clear();
             throw InvalidNumberException();
-        } catch (out_of_range&) {
+        } catch (std::out_of_range&) {
             _calculation.clear();
             _values.clear();
             throw InvalidNumberException();
         }
     }
+}
+
+template <typename T>
+void Stack<T>::push(T val) {
+
 }
 
 template <typename T>
@@ -250,8 +251,7 @@ void Stack<T>::execute_operation(const std::string& op) {
 
 template <typename T>
 void Stack<T>::process_calculation() {
-    using namespace std;
-    string single_op = extract_single_op(); // TODO: check if single_op is empty!
+    std::string single_op = extract_single_op(); // TODO: check if single_op is empty!
     if (is_correct_operand(single_op)) {
         try {
             push(single_op);
@@ -286,11 +286,6 @@ Stack<T>::Stack(std::string calculation_input, std::string type_name) {
     } else {
         throw InvalidDataTypeException();
     }
-}
-
-template <typename T>
-Stack<T>::~Stack() {
-    _values.clear();
 }
 
 template <typename T>
