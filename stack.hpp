@@ -49,10 +49,9 @@ private:
 
 public:
 // ------------------------------------ public methods declaration ------------------------------------
+    explicit Stack() = default;
     
     explicit Stack(std::string calculation_input, std::string type_name);
-    
-    ~Stack();
     
     void set_calculation(std::string calculation_input, std::string type_name);
     
@@ -282,7 +281,6 @@ bool Stack<T>::both_are_spaces(char left, char right) {
 
 template <typename T>
 Stack<T>::Stack(std::string calculation_input, std::string type_name) {
-    std::cout << "Konstruktor arbeitet..." << std::endl;
     _calculation = std::move(calculation_input);
     remove_unnecessary_whitespace();
     if (type_name == "int" || type_name == "unsigned" || type_name == "float" || type_name == "double") {
@@ -290,11 +288,6 @@ Stack<T>::Stack(std::string calculation_input, std::string type_name) {
     } else {
         throw InvalidDataTypeException();
     }
-}
-
-template <typename T>
-Stack<T>::~Stack() {
-    std::cout << "Destruktor arbeitet..." << std::endl;
 }
 
 template <typename T>

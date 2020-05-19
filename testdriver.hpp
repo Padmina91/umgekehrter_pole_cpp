@@ -44,10 +44,24 @@ public:
 // ------------------------------------ private methods definition ------------------------------------
 
 void Testdriver::test1() {
+    bool catch_activated = false;
     try {
         Stack<int> test_stack01("8 7 +", "int aaaaaaaaa 235 14  55");
     } catch (InvalidDataTypeException&) {
-        std::cout << "Test 1 erfolgreich." << std::endl;
+        catch_activated = true;
+    }
+    if (catch_activated) {
+        try {
+            catch_activated = false;
+            Stack<int> test_stack02;
+            test_stack02.set_calculation("2 -85 -", "asdf");
+        } catch (InvalidDataTypeException&) {
+            catch_activated = true;
+            std::cout << "Test 1 erfolgreich." << std::endl;
+        }
+    }
+    if (!catch_activated) {
+        std::cout << "Test 1 fehlgeschlagen." << std::endl;
     }
 }
 
