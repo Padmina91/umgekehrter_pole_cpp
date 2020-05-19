@@ -23,11 +23,11 @@ private:
     std::string _type_name;
 
 // ----------------------------------- private methods declaration ------------------------------------
-    void check_vector_type_equals_type_name();
+    void check_vector_type_matches_type_name();
 
     bool is_empty();
     
-    bool only_one_element_left();
+    bool has_one_element();
     
     void remove_unnecessary_whitespace();
     
@@ -48,7 +48,7 @@ private:
     void execute_operation(const std::string& op);
 
 // ------------------------------- private static methods declaration ---------------------------------
-    static bool both_are_spaces(char left, char right);
+    static bool both_are_spaces(char lhs, char rhs);
 
 public:
 // ------------------------------------ public methods declaration ------------------------------------
@@ -60,18 +60,23 @@ public:
     
     std::string get_calculation();
     
-    void print_current_stack();
-    
     void process_calculation();
     
     T get_result();
 };
 
+
+
+
 // ------------------------------------ private methods definition ------------------------------------
 
+/**
+ * Prüft, ob der übergebene String _type_name zum Datentyp des Stacks passt.
+ * @tparam T (typename)
+ */
 template <typename T>
-void Stack<T>::check_vector_type_equals_type_name() {
-    bool type_correct = false;
+void Stack<T>::check_vector_type_matches_type_name() {
+    bool type_correct;
     if (_type_name == "int") {
         type_correct = sizeof(T) == sizeof(int); // rules out everything but unsigned, int, float
         if (type_correct) {
@@ -108,17 +113,30 @@ void Stack<T>::check_vector_type_equals_type_name() {
     }
 }
 
-
+/**
+ * Gibt an, ob der Stack leer ist.
+ * @tparam T (typename)
+ * @return is_empty (bool)
+ */
 template <typename T>
 bool Stack<T>::is_empty() {
     return _values.size() == 0;
 }
 
+/**
+ * Gibt an, ob exakt ein Element im Stack ist
+ * @tparam T (typename)
+ * @return has_one_element (bool)
+ */
 template <typename T>
-bool Stack<T>::only_one_element_left() {
+bool Stack<T>::has_one_element() {
     return _values.size() == 1;
 }
 
+/**
+ * Entfernt jeglichen überflüssigenen Leerraum aus _calculation
+ * @tparam T (typename)
+ */
 template <typename T>
 void Stack<T>::remove_unnecessary_whitespace() {
     size_t position = 0;
@@ -139,22 +157,35 @@ void Stack<T>::remove_unnecessary_whitespace() {
     }
 }
 
+/**
+ * Extrahiert einen einzelnen Operanden oder Operator aus _calculation
+ * und kürzt _calculation dementsprechend.
+ * @tparam T (typename)
+ * @return single_op (std::string)
+ */
 template <typename T>
 std::string Stack<T>::extract_single_op() {
-    std::string s;
+    std::string single_op;
     if (!_calculation.empty()) {
-        size_t position = _calculation.find_first_of(' ');
-        if (position == std::string::npos) {
-            s = _calculation;
+        size_t pos = _calculation.find_first_of(' ');
+        if (pos == std::string::npos) {
+            single_op = _calculation;
             _calculation.clear();
         } else {
-            s = _calculation.substr(0, position);
-            _calculation.erase(0, position + 1);
+            single_op = _calculation.substr(0, pos);
+            _calculation.erase(0, pos + 1);
         }
     }
-    return s;
+    return single_op;
 }
 
+/**
+ * Prüft, ob der übergebene String ein korrekter Operand
+ * (also eine valide Zahl vom angegebenen Datentypen) ist.
+ * @tparam T (typename)
+ * @param s (std::string&)
+ * @return correct_operand (bool)
+ */
 template <typename T>
 bool Stack<T>::is_correct_operand(std::string& s) {
     bool correct_operand = true;
@@ -187,11 +218,22 @@ bool Stack<T>::is_correct_operand(std::string& s) {
     return correct_operand;
 }
 
+/**
+ * Prüft, ob der übergebene String ein korrekter Operator (+ - / *) ist.
+ * @tparam T (typename)
+ * @param s (std::string&)
+ * @return correct_operator (bool)
+ */
 template <typename T>
 bool Stack<T>::is_correct_operator(std::string& s) {
     return s == "/" || s == "*" || s == "-" || s == "+";
 }
 
+/**
+ * Legt einen als String vorliegenden Operanden auf den Stack
+ * @tparam T (typename)
+ * @param single_op (std::string&)
+ */
 template <typename T>
 void Stack<T>::push(const std::string& single_op) {
     if (_type_name == "int") {
@@ -248,11 +290,22 @@ void Stack<T>::push(const std::string& single_op) {
     }
 }
 
+/**
+ * Legt einen als Wert vorliegenden Operanden auf den Stack
+ * @tparam T (typename)
+ * @param val (T)
+ */
 template <typename T>
 void Stack<T>::push(T val) {
     _values.push_back(val);
 }
 
+/**
+ * Liefert das oberste Element des Stapels zurück
+ * @tparam T (typename)
+ * @throws EmptyStackException
+ * @return top_element (T)
+ */
 template <typename T>
 T Stack<T>::top() {
     if (!is_empty()) {
@@ -261,19 +314,34 @@ T Stack<T>::top() {
     throw EmptyStackException();
 }
 
+/**
+ * Entfernt das oberste Element aus dem Stack und liefert es zurück
+ * @tparam T (typename)
+ * @throws EmptyStackException
+ * @return top_element (T)
+ */
 template <typename T>
 T Stack<T>::pop() {
     if (!is_empty()) {
-        T last_val = top();
+        T top_element = top();
         _values.pop_back();
-        return last_val;
+        return top_element;
     }
     throw EmptyStackException();
 }
 
+/**
+ * Führt eine einzelne Operation (Addition, Subtraktion, ...) aus.
+ * Hierzu entfernt die Funktion die obersten zwei Werte aus dem Stack
+ * und legt das Ergebnis auf den Stack.
+ * @tparam T (typename)
+ * @throws TooFewOperandsException
+ * @throws DivisionByZeroException
+ * @param op (const std::string&)
+ */
 template <typename T>
 void Stack<T>::execute_operation(const std::string& op) {
-    if (is_empty() || only_one_element_left()) {
+    if (is_empty() || has_one_element()) {
         _calculation.clear();
         _values.clear();
         throw TooFewOperandsException();
@@ -304,13 +372,28 @@ void Stack<T>::execute_operation(const std::string& op) {
 
 // -------------------------------- private static methods definition ---------------------------------
 
+/**
+ * Hilfsfunktion für remove_unnecessary_whitespace. Gibt an, ob
+ * beide Parameter Leerzeichen sind.
+ * (lhs = left hand side, rhs = right hand side)
+ * @tparam T (typename)
+ * @param lhs (char)
+ * @param rhs (char)
+ * @return both_are_spaces (bool)
+ */
 template <typename T>
-bool Stack<T>::both_are_spaces(char left, char right) {
-    return (left == right) && (left == ' ');
+bool Stack<T>::both_are_spaces(char lhs, char rhs) {
+    return (lhs == rhs) && (lhs == ' ');
 }
 
 // ------------------------------------ public methods definition -------------------------------------
 
+/**
+ *
+ * @tparam T (typename)
+ * @param type_name (std::string)
+ * @throws InvalidDataTypeException
+ */
 template <typename T>
 Stack<T>::Stack(std::string type_name) {
     if (type_name == "int" || type_name == "unsigned" || type_name == "float" || type_name == "double") {
@@ -318,7 +401,7 @@ Stack<T>::Stack(std::string type_name) {
     } else {
         throw InvalidDataTypeException();
     }
-    check_vector_type_equals_type_name();
+    check_vector_type_matches_type_name();
 }
 
 template <typename T>
@@ -329,7 +412,7 @@ Stack<T>::Stack(std::string calculation_input, const std::string& type_name) : S
 
 template <typename T>
 void Stack<T>::set_calculation(std::string calculation_input) {
-    check_vector_type_equals_type_name();
+    check_vector_type_matches_type_name();
     _calculation = std::move(calculation_input);
     remove_unnecessary_whitespace();
 }
@@ -340,15 +423,8 @@ std::string Stack<T>::get_calculation() {
 }
 
 template <typename T>
-void Stack<T>::print_current_stack() {
-    for (T& val : _values) {
-        std::cout << val << ", ";
-    }
-}
-
-template <typename T>
 void Stack<T>::process_calculation() {
-    check_vector_type_equals_type_name();
+    check_vector_type_matches_type_name();
     while (!_calculation.empty()) {
         std::string single_op = extract_single_op(); // op = either operand or operator
         if (is_correct_operand(single_op)) {
@@ -359,7 +435,7 @@ void Stack<T>::process_calculation() {
             throw InvalidSyntaxException();
         }
     }
-    if (!only_one_element_left()) {
+    if (!has_one_element()) {
         // if there are two or more numbers left on the stack
         throw InvalidSyntaxException();
     }
@@ -367,7 +443,7 @@ void Stack<T>::process_calculation() {
 
 template <typename T>
 T Stack<T>::get_result() {
-    if (only_one_element_left()) {
+    if (has_one_element()) {
         return _values[0];
     }
     return 0;
