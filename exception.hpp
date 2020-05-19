@@ -11,8 +11,12 @@ class InvalidSyntaxException : public std::exception {};
 
 class InvalidNumberException : public std::exception {};
 
-class TooFewOperandsException : public std::exception{};
+class DivisionByZeroException : public std::exception {};
 
-class EmptyStackException : public std::exception{};
+class TooFewOperandsException : public std::exception {};
+
+class EmptyStackException : public std::exception {};
+
+class InvalidDataTypeException : public std::exception {};
 
 #endif //UMGEKEHRTER_POLE_CPP_EXCEPTION_HPP

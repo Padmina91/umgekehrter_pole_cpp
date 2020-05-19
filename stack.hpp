@@ -38,6 +38,15 @@ private:
     
     bool is_correct_operator(std::string& s);
     
+    void push(const std::string& single_op);
+    
+    T top();
+    
+    T pop();
+    
+    void execute_operation(const std::string& op);
+    
+    void process_calculation();
 
 // ----------------------------------------------------------------------------------------------------
 // ------------------------------- private static methods declaration ---------------------------------
@@ -45,7 +54,6 @@ private:
     static bool both_are_spaces(char left, char right);
 
 public:
-    void process_calculation(); //TODO: return back to private methods when debugging is done
 // ----------------------------------------------------------------------------------------------------
 // ------------------------------------ public methods declaration ------------------------------------
 // ----------------------------------------------------------------------------------------------------
@@ -57,11 +65,6 @@ public:
     
     std::string get_calculation();
     
-    void push(T val);
-    
-    T top();
-    
-    T pop();
     
     void print_current_stack();
 
@@ -121,29 +124,23 @@ template <typename T>
 bool Stack<T>::is_correct_operand(std::string& s) {
     bool correct_operand = true;
     using namespace std;
-    if (_type_name == "int") {
-        try {
-            stoi(s);
-        } catch (invalid_argument&) {
-            correct_operand = false;
-        } catch (out_of_range&) {
-            correct_operand = false;
+    if (_type_name == "int" || _type_name == "unsigned") {
+        for (int i = 0; i <s.size(); i++) {
+            if (s[i] > '9' || s[i] < '0') {
+                correct_operand = false;
+            }
+            if (i == 0 && s[i] == '-' && _type_name == "int" && s.size() > 1) {
+                correct_operand = true;
+            }
         }
-    } else if (_type_name == "float") {
-        try {
-            stof(s);
-        } catch (invalid_argument&) {
-            correct_operand = false;
-        } catch (out_of_range&) {
-            correct_operand = false;
-        }
-    } else if (_type_name == "double") {
-        try {
-            stod(s);
-        } catch (invalid_argument&) {
-            correct_operand = false;
-        } catch (out_of_range&) {
-            correct_operand = false;
+    } else {
+        for (int i = 0; i <s.size(); i++) {
+            if ((s[i] > '9' || s[i] < '0') && s[i] != '.') {
+                correct_operand = false;
+            }
+            if (i == 0 && s[i] == '-' && s.size() > 1) {
+                correct_operand = true;
+            }
         }
     }
     return correct_operand;
@@ -155,20 +152,115 @@ bool Stack<T>::is_correct_operator(std::string& s) {
 }
 
 template <typename T>
+void Stack<T>::push(const std::string& single_op) {
+    using namespace std;
+    if (_type_name == "int") {
+        try {
+            _values.push_back(stoi(single_op));
+        } catch (invalid_argument&) {
+            _calculation.clear();
+            _values.clear();
+            throw InvalidNumberException();
+        } catch (out_of_range&) {
+            _calculation.clear();
+            _values.clear();
+            throw InvalidNumberException();
+        }
+    }
+    if (_type_name == "unsigned") {
+        try {
+            _values.push_back(stoul(single_op));
+        } catch (invalid_argument&) {
+            _calculation.clear();
+            _values.clear();
+            throw InvalidNumberException();
+        } catch (out_of_range&) {
+            _calculation.clear();
+            _values.clear();
+            throw InvalidNumberException();
+        }
+    }
+    if (_type_name == "float") {
+        try {
+            _values.push_back(stof(single_op));
+        } catch (invalid_argument&) {
+            _calculation.clear();
+            _values.clear();
+            throw InvalidNumberException();
+        } catch (out_of_range&) {
+            _calculation.clear();
+            _values.clear();
+            throw InvalidNumberException();
+        }
+    }
+    if (_type_name == "double") {
+        try {
+            _values.push_back(stod(single_op));
+        } catch (invalid_argument&) {
+            _calculation.clear();
+            _values.clear();
+            throw InvalidNumberException();
+        } catch (out_of_range&) {
+            _calculation.clear();
+            _values.clear();
+            throw InvalidNumberException();
+        }
+    }
+}
+
+template <typename T>
+T Stack<T>::top() {
+    if (!is_empty()) {
+        return _values.back();
+    }
+    throw EmptyStackException();
+}
+
+template <typename T>
+T Stack<T>::pop() {
+    if (!is_empty()) {
+        T last_val = top();
+        _values.pop_back();
+        return last_val;
+    }
+    throw EmptyStackException();
+}
+
+template <typename T>
+void Stack<T>::execute_operation(const std::string& op) {
+    if (op == "/") {
+        T op2 = pop();
+        T op1 = pop();
+        if (op2 == (T) 0) {
+            throw DivisionByZeroException();
+        } else {
+        
+        }
+    }
+    if (op == "*") {
+    
+    }
+    if (op == "-") {
+    
+    }
+    if (op == "+") {
+    
+    }
+}
+
+template <typename T>
 void Stack<T>::process_calculation() {
     using namespace std;
-    string single_op = extract_single_op();
+    string single_op = extract_single_op(); // TODO: check if single_op is empty!
     if (is_correct_operand(single_op)) {
-        cout << "|" << single_op << "| ist ein korrekter Operand! Jippie ja jeiii!" << endl;
-        // push_shit_to_stack
-    } else {
-        cout << "|" << single_op << "| ist leider kein korrekter Operand..." << endl;
+        try {
+            push(single_op);
+        } catch(InvalidNumberException&) {
+            throw InvalidNumberException();
+        }
     }
     if (is_correct_operator(single_op)) {
-        cout << "Korrekter Operator! Jippie ja jeiii!" << endl;
         // TRY TO execute_operation... catch TooFewOperandsException&
-    } else {
-        cout << "Leider kein korrekter Operator..." << endl;
     }
 }
 
@@ -189,7 +281,11 @@ template <typename T>
 Stack<T>::Stack(std::string calculation_input, std::string type_name) {
     _calculation = std::move(calculation_input);
     remove_unnecessary_whitespace();
-    _type_name = std::move(type_name);
+    if (type_name == "int" || type_name == "unsigned" || type_name == "float" || type_name == "double") {
+        _type_name = std::move(type_name);
+    } else {
+        throw InvalidDataTypeException();
+    }
 }
 
 template <typename T>
@@ -200,7 +296,11 @@ Stack<T>::~Stack() {
 template <typename T>
 void Stack<T>::set_calculation(std::string calculation_input, std::string type_name) {
     _calculation = std::move(calculation_input);
-    _type_name = std::move(type_name);
+    if (type_name == "int" || type_name == "unsigned" || type_name == "float" || type_name == "double") {
+        _type_name = std::move(type_name);
+    } else {
+        throw InvalidDataTypeException();
+    }
 }
 
 template <typename T>
@@ -208,28 +308,6 @@ std::string Stack<T>::get_calculation() {
     return _calculation;
 }
 
-template <typename T>
-void Stack<T>::push(T val) {
-    _values.push_back(val);
-}
-
-template <typename T>
-T Stack<T>::top() {
-    if (!is_empty()) {
-        return _values.back();
-    }
-    throw EmptyStackException();
-}
-
-template <typename T>
-T Stack<T>::pop() {
-    if (!is_empty()) {
-        T last_val = top();
-        _values.pop_back();
-        return last_val;
-    }
-    throw EmptyStackException();
-}
 
 template <typename T>
 void Stack<T>::print_current_stack() {

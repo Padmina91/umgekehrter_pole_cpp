@@ -8,9 +8,9 @@
 int main() {
     using namespace std;
     
-    Stack<int> stack("l  \n\n\n\t  werj\toi 2q3 r 23r 23 52 35 1  11 1 1 1  1    11   1\r\r\r\r11    \r\n     ", "int");
+    Stack<unsigned> stack("++  \n\n\n\t  werj\toi 2q3 r 23r 23 52 35 1  11 1 1 1  1    11   1\r\r\r\r11    \r\n     ", "float");
     cout << "|" << stack.get_calculation() << "|" << endl;
-    stack.process_calculation();
+    //stack.process_calculation();
     cout << "|" << stack.get_calculation() << "|" << endl;
     //vector<int> values;
     //for (int i = 1; i <= 5; i++)
