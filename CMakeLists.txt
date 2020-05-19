@@ -3,4 +3,4 @@ project(umgekehrter_pole_cpp)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(umgekehrter_pole_cpp main.cpp stack.hpp exception.hpp)
+add_executable(umgekehrter_pole_cpp main.cpp stack.hpp exception.hpp testdriver.hpp)
