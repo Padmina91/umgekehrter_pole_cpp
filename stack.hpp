@@ -5,7 +5,7 @@
 #ifndef UMGEKEHRTER_POLE_CPP_STACK_HPP
 #define UMGEKEHRTER_POLE_CPP_STACK_HPP
 
-#include <utility>
+//#include <utility>
 #include <vector>
 #include <iostream>
 #include <algorithm>
@@ -47,8 +47,6 @@ private:
     T pop();
     
     void execute_operation(const std::string& op);
-    
-    void process_calculation();
 
 // ----------------------------------------------------------------------------------------------------
 // ------------------------------- private static methods declaration ---------------------------------
@@ -66,6 +64,10 @@ public:
     std::string get_calculation();
     
     void print_current_stack();
+    
+    void process_calculation();
+    
+    T get_result();
 
 // ----------------------------------------------------------------------------------------------------
 // -------------------------------- public static methods declaration ---------------------------------
@@ -88,20 +90,22 @@ bool Stack<T>::only_one_element_left() {
 template <typename T>
 void Stack<T>::remove_unnecessary_whitespace() {
     size_t position = 0;
-    while (position != std::string::npos) { // npos is the largest possible size_t. It's the return value of find_first_of() if no occurrence is found
+    while (position !=
+           std::string::npos) { // npos is the largest possible size_t. It's the return value of find_first_of() if no occurrence is found
         position = _calculation.find_first_of("\n\t\r");
         if (position != std::string::npos) {
             _calculation.replace(position, 1, " "); // first, replaces all non-space whitespace by spaces
         }
     }
-    std::string::iterator new_end = std::unique(_calculation.begin(), _calculation.end(), both_are_spaces); // removes all non-single spaces
+    std::string::iterator new_end = std::unique(_calculation.begin(), _calculation.end(),
+                                                both_are_spaces); // removes all non-single spaces
     _calculation.erase(new_end, _calculation.end()); // shortens the string
     _calculation.erase(_calculation.find_last_not_of(' ') + 1); // crops whitespace at the end of _calculation
     if (_calculation.find_first_not_of(' ') - 1 != std::string::npos) {
-        _calculation.erase(_calculation.find_first_not_of(' ') - 1, 1); // finally crops whitespace at the beginning if necessary
+        _calculation.erase(_calculation.find_first_not_of(' ') - 1,
+                           1); // finally crops whitespace at the beginning if necessary
     }
 }
-
 
 template <typename T>
 std::string Stack<T>::extract_single_op() {
@@ -111,9 +115,10 @@ std::string Stack<T>::extract_single_op() {
         if (position == std::string::npos) {
             s = _calculation;
             _calculation.clear();
+        } else {
+            s = _calculation.substr(0, position);
+            _calculation.erase(0, position + 1);
         }
-        s = _calculation.substr(0, position);
-        _calculation.erase(0, position + 1);
     }
     return s;
 }
@@ -122,7 +127,7 @@ template <typename T>
 bool Stack<T>::is_correct_operand(std::string& s) {
     bool correct_operand = true;
     if (_type_name == "int" || _type_name == "unsigned") {
-        for (int i = 0; i <s.size(); i++) {
+        for (int i = 0; i < s.size(); i++) {
             if (s[i] > '9' || s[i] < '0') {
                 correct_operand = false;
             }
@@ -131,7 +136,7 @@ bool Stack<T>::is_correct_operand(std::string& s) {
             }
         }
     } else {
-        for (int i = 0; i <s.size(); i++) {
+        for (int i = 0; i < s.size(); i++) {
             if ((s[i] > '9' || s[i] < '0') && s[i] != '.') {
                 correct_operand = false;
             }
@@ -206,7 +211,7 @@ void Stack<T>::push(const std::string& single_op) {
 
 template <typename T>
 void Stack<T>::push(T val) {
-
+    _values.push_back(val);
 }
 
 template <typename T>
@@ -229,38 +234,50 @@ T Stack<T>::pop() {
 
 template <typename T>
 void Stack<T>::execute_operation(const std::string& op) {
+    if (is_empty() || only_one_element_left()) {
+        _calculation.clear();
+        _values.clear();
+        throw TooFewOperandsException();
+    }
+    T op2 = pop();
+    T op1 = pop();
     if (op == "/") {
-        T op2 = pop();
-        T op1 = pop();
         if (op2 == (T) 0) {
             throw DivisionByZeroException();
         } else {
-        
+            T result = op1 / op2;
+            push(result);
         }
     }
     if (op == "*") {
-    
+        T result = op1 * op2;
+        push(result);
     }
     if (op == "-") {
-    
+        T result = op1 - op2;
+        push(result);
     }
     if (op == "+") {
-    
+        T result = op1 + op2;
+        push(result);
     }
 }
 
 template <typename T>
 void Stack<T>::process_calculation() {
-    std::string single_op = extract_single_op(); // TODO: check if single_op is empty!
-    if (is_correct_operand(single_op)) {
-        try {
+    while (!_calculation.empty()) {
+        std::string single_op = extract_single_op(); // op = either operand or operator
+        if (is_correct_operand(single_op)) {
             push(single_op);
-        } catch(InvalidNumberException&) {
-            throw InvalidNumberException();
+        } else if (is_correct_operator(single_op)) {
+            execute_operation(single_op);
+        } else {
+            throw InvalidSyntaxException();
         }
     }
-    if (is_correct_operator(single_op)) {
-        // TRY TO execute_operation... catch TooFewOperandsException&
+    if (!only_one_element_left()) {
+        // if there are two or more numbers left on the stack
+        throw InvalidSyntaxException();
     }
 }
 
@@ -303,12 +320,19 @@ std::string Stack<T>::get_calculation() {
     return _calculation;
 }
 
-
 template <typename T>
 void Stack<T>::print_current_stack() {
     for (T& val : _values) {
         std::cout << val << ", ";
     }
+}
+
+template <typename T>
+T Stack<T>::get_result() {
+    if (only_one_element_left()) {
+        return _values[0];
+    }
+    return 0;
 }
 
 // ----------------------------------------------------------------------------------------------------
