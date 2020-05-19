@@ -323,7 +323,7 @@ void Testdriver::test07(const std::string& type_name) {
 template <typename T>
 void Testdriver::test08(const std::string& type_name) {
     bool test_successful = false;
-    if (type_name == "int" | type_name == "unsigned") {
+    if (type_name == "int" || type_name == "unsigned") {
         Stack<T> test_stack08_1("7954849815648796215515464854684 7 -", type_name);
         try {
             test_stack08_1.process_calculation();
@@ -331,7 +331,9 @@ void Testdriver::test08(const std::string& type_name) {
             test_successful = true;
         }
     } else if (type_name == "float") {
-        Stack<T> test_stack08_2("7954849815648795186548484457621551546846887896435125152485854545464854684.7878515858484312518254848543458 7 -", type_name);
+        Stack<T> test_stack08_2(
+                "7954849815648795186548484457621551546846887896435125152485854545464854684.7878515858484312518254848543458 7 -",
+                type_name);
         try {
             test_stack08_2.process_calculation();
         } catch (InvalidNumberException&) {
@@ -399,14 +401,44 @@ void Testdriver::test09(const std::string& type_name) {
 
 template <typename T>
 void Testdriver::test10(const std::string& type_name) {
-    // Division durch 0 testen
-    std::cout << "Test 10..." << std::endl;
+    bool test_successful = false;
+    if (type_name == "int" || type_name == "unsigned") {
+        Stack<T> test_stack10_1("4 0 /", type_name);
+        try {
+            test_stack10_1.process_calculation();
+        } catch (DivisionByZeroException&) {
+            test_successful = true;
+        }
+    } else {
+        Stack<T> test_stack10_2("4.0 0.0 /", type_name);
+        try {
+            test_stack10_2.process_calculation();
+        } catch (DivisionByZeroException&) {
+            test_successful = true;
+        }
+    }
+
+    if (test_successful) {
+        std::cout << "Test 10 erfolgreich." << std::endl;
+    } else {
+        std::cout << "Test 10 fehlgeschlagen." << std::endl;
+    }
 }
 
 template <typename T>
 void Testdriver::test11(const std::string& type_name) {
-    // einfach nur eine Zahl eingeben, das sollte auch ein korrekter Eintrag sein :)
-    std::cout << "Test 11..." << std::endl;
+    bool test_successful = false;
+    Stack<T> test_stack11("6", type_name);
+    test_stack11.process_calculation();
+    if (test_stack11.get_result() == (T) 6) {
+        test_successful = true;
+    }
+    
+    if (test_successful) {
+        std::cout << "Test 11 erfolgreich." << std::endl;
+    } else {
+        std::cout << "Test 11 fehlgeschlagen." << std::endl;
+    }
 }
 
 template <typename T>
