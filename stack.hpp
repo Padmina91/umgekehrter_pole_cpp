@@ -1,5 +1,6 @@
 //
-// Created by Mina on 18.05.2020.
+// Created by Mina (Marina Inokuchi) on 18.05.2020.
+// Padmina91 (GitHub)
 //
 
 #ifndef UMGEKEHRTER_POLE_CPP_STACK_HPP
@@ -157,6 +158,7 @@ std::string Stack<T>::extract_single_op() {
 template <typename T>
 bool Stack<T>::is_correct_operand(std::string& s) {
     bool correct_operand = true;
+    int num_of_decimal_points = 0;
     if (_type_name == "int" || _type_name == "unsigned") {
         for (int i = 0; i < s.size(); i++) {
             if (s[i] > '9' || s[i] < '0') {
@@ -174,6 +176,12 @@ bool Stack<T>::is_correct_operand(std::string& s) {
             if (i == 0 && s[i] == '-' && s.size() > 1) {
                 correct_operand = true;
             }
+            if (s[i] == '.') {
+                num_of_decimal_points++;
+            }
+        }
+        if (num_of_decimal_points > 1) {
+            correct_operand = false;
         }
     }
     return correct_operand;
@@ -294,25 +302,6 @@ void Stack<T>::execute_operation(const std::string& op) {
     }
 }
 
-template <typename T>
-void Stack<T>::process_calculation() {
-    check_vector_type_equals_type_name();
-    while (!_calculation.empty()) {
-        std::string single_op = extract_single_op(); // op = either operand or operator
-        if (is_correct_operand(single_op)) {
-            push(single_op);
-        } else if (is_correct_operator(single_op)) {
-            execute_operation(single_op);
-        } else {
-            throw InvalidSyntaxException();
-        }
-    }
-    if (!only_one_element_left()) {
-        // if there are two or more numbers left on the stack
-        throw InvalidSyntaxException();
-    }
-}
-
 // -------------------------------- private static methods definition ---------------------------------
 
 template <typename T>
@@ -354,6 +343,25 @@ template <typename T>
 void Stack<T>::print_current_stack() {
     for (T& val : _values) {
         std::cout << val << ", ";
+    }
+}
+
+template <typename T>
+void Stack<T>::process_calculation() {
+    check_vector_type_equals_type_name();
+    while (!_calculation.empty()) {
+        std::string single_op = extract_single_op(); // op = either operand or operator
+        if (is_correct_operand(single_op)) {
+            push(single_op);
+        } else if (is_correct_operator(single_op)) {
+            execute_operation(single_op);
+        } else {
+            throw InvalidSyntaxException();
+        }
+    }
+    if (!only_one_element_left()) {
+        // if there are two or more numbers left on the stack
+        throw InvalidSyntaxException();
     }
 }
 

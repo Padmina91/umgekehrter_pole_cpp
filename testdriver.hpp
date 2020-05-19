@@ -1,5 +1,6 @@
 //
-// Created by Mina on 19.05.2020.
+// Created by Mina (Marina Inokuchi) on 19.05.2020.
+// Padmina91 (GitHub)
 //
 
 #ifndef UMGEKEHRTER_POLE_CPP_TESTDRIVER_HPP
@@ -33,6 +34,12 @@ private:
     
     template <typename T>
     void test08(const std::string& type_name);
+    
+    template <typename T>
+    void test09(const std::string& type_name);
+    
+    template <typename T>
+    void test10(const std::string& type_name);
     
     template <typename T>
     void execute_all_tests(const std::string& type_name);
@@ -238,8 +245,24 @@ void Testdriver::test05(const std::string& type_name) {
 template <typename T>
 void Testdriver::test06(const std::string& type_name) {
     bool test_successful = false;
-    
-    
+    std::string calculation06_1 = "5 -";
+    Stack<T> test_stack06_1(calculation06_1, type_name);
+    try {
+        test_stack06_1.process_calculation();
+    } catch (TooFewOperandsException&) {
+        test_successful = true;
+    }
+    if (test_successful) {
+        test_successful = false;
+        std::string calculation06_2 = "/ 5 7";
+        Stack<T> test_stack06_2(type_name);
+        test_stack06_2.set_calculation(calculation06_2);
+        try {
+            test_stack06_2.process_calculation();
+        } catch (TooFewOperandsException&) {
+            test_successful = true;
+        }
+    }
     
     if (test_successful) {
         std::cout << "Test 6 erfolgreich." << std::endl;
@@ -250,12 +273,66 @@ void Testdriver::test06(const std::string& type_name) {
 
 template <typename T>
 void Testdriver::test07(const std::string& type_name) {
-    std::cout << "Test 7..." << std::endl;
+    bool test_successful = false;
+    if (type_name == "int" || type_name == "unsigned") {
+        Stack<T> test_stack07_1(type_name);
+        test_stack07_1.set_calculation("5.48 7.78 *");
+        try {
+            test_stack07_1.process_calculation();
+        } catch (InvalidSyntaxException&) {
+            test_successful = true;
+        }
+        if (test_successful) {
+            test_successful = false;
+            Stack<T> test_stack07_2("8 4*78/", type_name);
+            try {
+                test_stack07_2.process_calculation();
+            } catch (InvalidSyntaxException&) {
+                test_successful = true;
+            }
+        }
+    } else {
+        Stack<T> test_stack07_3(type_name);
+        test_stack07_3.set_calculation("5.48.74 87.15 -");
+        try {
+            test_stack07_3.process_calculation();
+        } catch (InvalidSyntaxException&) {
+            test_successful = true;
+        }
+        if (test_successful) {
+            test_successful = false;
+            Stack<T> test_stack07_4("5.74/   *-*/", type_name);
+            try {
+                test_stack07_4.process_calculation();
+            } catch (InvalidSyntaxException&) {
+                test_successful = true;
+            }
+        }
+    }
+    
+    if (test_successful) {
+        std::cout << "Test 7 erfolgreich." << std::endl;
+    } else {
+        std::cout << "Test 7 fehlgeschlagen." << std::endl;
+    }
 }
 
 template <typename T>
 void Testdriver::test08(const std::string& type_name) {
+    // riesen großen int wert der überläuft
     std::cout << "Test 8..." << std::endl;
+}
+
+template <typename T>
+void Testdriver::test09(const std::string& type_name) {
+    // richtige Rechnung und dann Ergebnis prüfen
+    std::cout << "Test 9..." << std::endl;
+}
+
+template <typename T>
+void Testdriver::test10(const std::string& type_name) {
+    // Division durch 0!
+    std::cout << "Test 10..." << std::endl;
 }
 
 template <typename T>
@@ -268,6 +345,8 @@ void Testdriver::execute_all_tests(const std::string& type_name) {
     test06<T>(type_name);
     test07<T>(type_name);
     test08<T>(type_name);
+    test09<T>(type_name);
+    test10<T>(type_name);
     std::cout << std::endl;
 }
 

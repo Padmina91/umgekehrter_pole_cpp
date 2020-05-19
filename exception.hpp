@@ -1,5 +1,6 @@
 //
-// Created by Mina on 18.05.2020.
+// Created by Mina (Marina Inokuchi) on 18.05.2020.
+// Padmina91 (GitHub)
 //
 
 #ifndef UMGEKEHRTER_POLE_CPP_EXCEPTION_HPP
