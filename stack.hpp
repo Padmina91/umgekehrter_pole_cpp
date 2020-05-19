@@ -22,6 +22,8 @@ private:
     std::string _type_name;
 
 // ----------------------------------- private methods declaration ------------------------------------
+    void check_vector_type_equals_type_name();
+
     bool is_empty();
     
     bool only_one_element_left();
@@ -49,11 +51,11 @@ private:
 
 public:
 // ------------------------------------ public methods declaration ------------------------------------
-    explicit Stack() = default;
+    explicit Stack(std::string type_name);
     
-    explicit Stack(std::string calculation_input, std::string type_name);
+    explicit Stack(std::string calculation_input, const std::string& type_name);
     
-    void set_calculation(std::string calculation_input, std::string type_name);
+    void set_calculation(std::string calculation_input);
     
     std::string get_calculation();
     
@@ -65,6 +67,46 @@ public:
 };
 
 // ------------------------------------ private methods definition ------------------------------------
+
+template <typename T>
+void Stack<T>::check_vector_type_equals_type_name() {
+    bool type_correct = false;
+    if (_type_name == "int") {
+        type_correct = sizeof(T) == sizeof(int); // rules out everything but unsigned, int, float
+        if (type_correct) {
+            T compare_test_lhs = 6.5;
+            int compare_test_rhs = 6;
+            type_correct = (float) compare_test_lhs == (float) compare_test_rhs; // rules out float
+        }
+        if (type_correct) {
+            T negative_test = -5;
+            type_correct = negative_test < 0; // rules out unsigned
+        }
+    } else if (_type_name == "unsigned") {
+        T negative_test = -5;
+        type_correct = negative_test > 0; // T must be unsigned if this is true
+    } else if (_type_name == "float") {
+        type_correct = sizeof(T) == sizeof(float); // rules out double
+        if (type_correct) {
+            T float_test_lhs = 6.5f;
+            float float_test_rhs = 6.5f;
+            type_correct = (float) float_test_lhs == float_test_rhs; // rules out all int types
+        }
+    } else { // _type_name = "double"
+        type_correct = sizeof(T) == sizeof(double); // leaves only double, long long int and unsigned long long int
+        if (type_correct) {
+            T double_test_lhs = 6.5;
+            double double_test_rhs = 6.5;
+            type_correct = (double) double_test_lhs == double_test_rhs; // rules out all int types
+        }
+    }
+    if (!type_correct) {
+        _values.clear();
+        _calculation.clear();
+        throw TypesNotMatchingException();
+    }
+}
+
 
 template <typename T>
 bool Stack<T>::is_empty() {
@@ -254,6 +296,7 @@ void Stack<T>::execute_operation(const std::string& op) {
 
 template <typename T>
 void Stack<T>::process_calculation() {
+    check_vector_type_equals_type_name();
     while (!_calculation.empty()) {
         std::string single_op = extract_single_op(); // op = either operand or operator
         if (is_correct_operand(single_op)) {
@@ -280,25 +323,26 @@ bool Stack<T>::both_are_spaces(char left, char right) {
 // ------------------------------------ public methods definition -------------------------------------
 
 template <typename T>
-Stack<T>::Stack(std::string calculation_input, std::string type_name) {
-    _calculation = std::move(calculation_input);
-    remove_unnecessary_whitespace();
+Stack<T>::Stack(std::string type_name) {
     if (type_name == "int" || type_name == "unsigned" || type_name == "float" || type_name == "double") {
         _type_name = std::move(type_name);
     } else {
         throw InvalidDataTypeException();
     }
+    check_vector_type_equals_type_name();
 }
 
 template <typename T>
-void Stack<T>::set_calculation(std::string calculation_input, std::string type_name) {
+Stack<T>::Stack(std::string calculation_input, const std::string& type_name) : Stack(type_name) {
     _calculation = std::move(calculation_input);
     remove_unnecessary_whitespace();
-    if (type_name == "int" || type_name == "unsigned" || type_name == "float" || type_name == "double") {
-        _type_name = std::move(type_name);
-    } else {
-        throw InvalidDataTypeException();
-    }
+}
+
+template <typename T>
+void Stack<T>::set_calculation(std::string calculation_input) {
+    check_vector_type_equals_type_name();
+    _calculation = std::move(calculation_input);
+    remove_unnecessary_whitespace();
 }
 
 template <typename T>

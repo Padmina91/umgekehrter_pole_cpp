@@ -7,6 +7,8 @@
 
 #include <exception>
 
+class TypesNotMatchingException : public std::exception {};
+
 class InvalidSyntaxException : public std::exception {};
 
 class InvalidNumberException : public std::exception {};

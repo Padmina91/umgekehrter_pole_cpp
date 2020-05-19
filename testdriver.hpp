@@ -55,8 +55,7 @@ void Testdriver::test01() {
     if (test_successful) {
         try {
             test_successful = false;
-            Stack<int> test_stack01_2;
-            test_stack01_2.set_calculation("2 -85 -", "asdfasdf float");
+            Stack<int> test_stack01_2("asdfasdf float");
         } catch (InvalidDataTypeException&) {
             test_successful = true;
         }
@@ -71,9 +70,9 @@ void Testdriver::test01() {
 template <typename T>
 void Testdriver::test02(const std::string& type_name) {
     bool test_successful = false;
-    Stack<T> test_stack02;
+    Stack<T> test_stack02(type_name);
     std::string calculation = "    \r   + \r * / \t   5.4\n 7 \t8 - \r    \t\n\n\n       ";
-    test_stack02.set_calculation(calculation, type_name);
+    test_stack02.set_calculation(calculation);
     if (test_stack02.get_calculation().size() == 15) { // "+ * / 5.4 7 8 -" = 15 Zeichen im String
         test_successful = true;
     }
@@ -95,11 +94,11 @@ void Testdriver::test03(const std::string& type_name) {
         test_successful = true;
     }
     if (test_successful) {
-        Stack<T> test_stack03_2;
-        test_stack03_2.set_calculation(calculation, type_name);
+        Stack<T> test_stack03_2(type_name);
+        test_stack03_2.set_calculation(calculation);
         try {
             test_successful = false;
-            test_stack03_1.process_calculation();
+            test_stack03_2.process_calculation();
         } catch (InvalidSyntaxException&) {
             test_successful = true;
         }
@@ -113,17 +112,140 @@ void Testdriver::test03(const std::string& type_name) {
 
 template <typename T>
 void Testdriver::test04(const std::string& type_name) {
-    std::cout << "Test 4..." << std::endl;
+    bool test_successful = false;
+    Stack<T> test_stack04(type_name);
+    std::string calculation;
+    
+    if (type_name == "int" || type_name == "unsigned") {
+        calculation = "5 4 7 6 -";
+    } else {
+        calculation = "5 4.7 7 6.5 -";
+    }
+    
+    try {
+        test_stack04.set_calculation(calculation);
+        test_stack04.process_calculation();
+    } catch (InvalidSyntaxException&) {
+        test_successful = true;
+    }
+    
+    if (test_successful) {
+        std::cout << "Test 4 erfolgreich." << std::endl;
+    } else {
+        std::cout << "Test 4 fehlgeschlagen." << std::endl;
+    }
 }
 
 template <typename T>
 void Testdriver::test05(const std::string& type_name) {
-    std::cout << "Test 5..." << std::endl;
+    bool test_successful = false;
+    
+    if (type_name == "int") {
+        try {
+            Stack<double> test_stack05_01(type_name);
+        } catch (TypesNotMatchingException&) {
+            test_successful = true;
+        }
+        if (test_successful) {
+            try {
+                Stack<float> test_stack05_02(type_name);
+            } catch (TypesNotMatchingException&) {
+                test_successful = true;
+            }
+        }
+        if (test_successful) {
+            try {
+                Stack<unsigned> test_stack05_03(type_name);
+            } catch (TypesNotMatchingException&) {
+                test_successful = true;
+            }
+        }
+    }
+    
+    if (type_name == "unsigned") {
+        try {
+            Stack<double> test_stack05_04(type_name);
+        } catch (TypesNotMatchingException&) {
+            test_successful = true;
+        }
+        if (test_successful) {
+            try {
+                Stack<int> test_stack05_05(type_name);
+            } catch (TypesNotMatchingException&) {
+                test_successful = true;
+            }
+        }
+        if (test_successful) {
+            try {
+                Stack<float> test_stack05_06(type_name);
+            } catch (TypesNotMatchingException&) {
+                test_successful = true;
+            }
+        }
+    }
+    
+    if (type_name == "float") {
+        try {
+            Stack<double> test_stack05_07(type_name);
+        } catch (TypesNotMatchingException&) {
+            test_successful = true;
+        }
+        if (test_successful) {
+            try {
+                Stack<int> test_stack05_08(type_name);
+            } catch (TypesNotMatchingException&) {
+                test_successful = true;
+            }
+        }
+        if (test_successful) {
+            try {
+                Stack<unsigned> test_stack05_09(type_name);
+            } catch (TypesNotMatchingException&) {
+                test_successful = true;
+            }
+        }
+    }
+    
+    if (type_name == "double") {
+        try {
+            Stack<float> test_stack05_10(type_name);
+        } catch (TypesNotMatchingException&) {
+            test_successful = true;
+        }
+        if (test_successful) {
+            try {
+                Stack<int> test_stack05_11(type_name);
+            } catch (TypesNotMatchingException&) {
+                test_successful = true;
+            }
+        }
+        if (test_successful) {
+            try {
+                Stack<unsigned> test_stack05_12(type_name);
+            } catch (TypesNotMatchingException&) {
+                test_successful = true;
+            }
+        }
+    }
+    
+    if (test_successful) {
+        std::cout << "Test 5 erfolgreich." << std::endl;
+    } else {
+        std::cout << "Test 5 fehlgeschlagen." << std::endl;
+    }
 }
 
 template <typename T>
 void Testdriver::test06(const std::string& type_name) {
-    std::cout << "Test 6..." << std::endl;
+    bool test_successful = false;
+    
+    
+    
+    if (test_successful) {
+        std::cout << "Test 6 erfolgreich." << std::endl;
+    } else {
+        std::cout << "Test 6 fehlgeschlagen." << std::endl;
+    }
 }
 
 template <typename T>
