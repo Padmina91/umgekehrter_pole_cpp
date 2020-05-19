@@ -389,7 +389,8 @@ bool Stack<T>::both_are_spaces(char lhs, char rhs) {
 // ------------------------------------ public methods definition -------------------------------------
 
 /**
- *
+ * Konstruktor: erstellt ein Objekt ohne _calculation zu füllen.
+ * Dies muss dann manuell über set_calculation() nachgeholt werden.
  * @tparam T (typename)
  * @param type_name (std::string)
  * @throws InvalidDataTypeException
@@ -404,12 +405,23 @@ Stack<T>::Stack(std::string type_name) {
     check_vector_type_matches_type_name();
 }
 
+/**
+ * Überladener Konstruktor: erstellt ein Objekt und füllt den String _calculation
+ * @tparam T (typename)
+ * @param calculation_input (std::string)
+ * @param type_name (const std::string&)
+ */
 template <typename T>
 Stack<T>::Stack(std::string calculation_input, const std::string& type_name) : Stack(type_name) {
     _calculation = std::move(calculation_input);
     remove_unnecessary_whitespace();
 }
 
+/**
+ * Füllt das private Attribut _calculation mit dem übergebenen String
+ * @tparam T (typename)
+ * @param calculation_input (std::string)
+ */
 template <typename T>
 void Stack<T>::set_calculation(std::string calculation_input) {
     check_vector_type_matches_type_name();
@@ -417,13 +429,26 @@ void Stack<T>::set_calculation(std::string calculation_input) {
     remove_unnecessary_whitespace();
 }
 
+/**
+ * Gibt den Inhalt von _calculation zurück.
+ * @tparam T (typename)
+ * @return _calculation (std::string)
+ */
 template <typename T>
 std::string Stack<T>::get_calculation() {
     return _calculation;
 }
 
+/**
+ * Führt die Berechnung aus. Hierfür kürzt es Stück für Stück
+ * den String _calculation bis er leer ist und benutzt den Stack
+ * für die Berechnung.
+ * @tparam T (typename)
+ * @throws InvalidSyntaxException
+ */
 template <typename T>
 void Stack<T>::process_calculation() {
+    _values.clear();
     check_vector_type_matches_type_name();
     while (!_calculation.empty()) {
         std::string single_op = extract_single_op(); // op = either operand or operator
@@ -441,6 +466,13 @@ void Stack<T>::process_calculation() {
     }
 }
 
+// TODO: statt 0 zurück zu geben, besser eine Exception werfen.
+/**
+ * Gibt das Ergebnis zurück, falls nur noch ein Element auf dem Stack liegt.
+ * Sollten noch mehrere Elemente vorhanden sein, gibt die Methode 0 zurück.
+ * @tparam T (typename)
+ * @return result (T)
+ */
 template <typename T>
 T Stack<T>::get_result() {
     if (has_one_element()) {

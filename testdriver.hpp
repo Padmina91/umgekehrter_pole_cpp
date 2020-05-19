@@ -454,6 +454,9 @@ void Testdriver::execute_all_tests(const std::string& type_name) {
     test09<T>(type_name);
     test10<T>(type_name);
     test11<T>(type_name);
+    //TODO: einen Test, der zwei verschiedene Berechnungen bei ein und demselben Objekt durchführt. Testen, ob der Stack auch wirklich korrekt geleert wird nach einer Rechnung.
+    //TODO: Einen Test, der versucht, ein Ergebnis zu bekommen, während sich entweder kein Element oder mehrere Elemente auf dem Stack befinden
+    //TODO: Einen Test, der versucht, eine leere Rechnung (_calculation = "") auszuführen.
     std::cout << std::endl;
 }
 
