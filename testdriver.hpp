@@ -42,6 +42,9 @@ private:
     void test10(const std::string& type_name);
     
     template <typename T>
+    void test11(const std::string& type_name);
+    
+    template <typename T>
     void execute_all_tests(const std::string& type_name);
 
 public:
@@ -319,20 +322,91 @@ void Testdriver::test07(const std::string& type_name) {
 
 template <typename T>
 void Testdriver::test08(const std::string& type_name) {
-    // riesen großen int wert der überläuft
-    std::cout << "Test 8..." << std::endl;
+    bool test_successful = false;
+    if (type_name == "int" | type_name == "unsigned") {
+        Stack<T> test_stack08_1("7954849815648796215515464854684 7 -", type_name);
+        try {
+            test_stack08_1.process_calculation();
+        } catch (InvalidNumberException&) {
+            test_successful = true;
+        }
+    } else if (type_name == "float") {
+        Stack<T> test_stack08_2("7954849815648795186548484457621551546846887896435125152485854545464854684.7878515858484312518254848543458 7 -", type_name);
+        try {
+            test_stack08_2.process_calculation();
+        } catch (InvalidNumberException&) {
+            test_successful = true;
+        }
+    } else {
+        test_successful = true; // there is no real overflow in double, it will just lose precision
+    }
+    
+    if (test_successful) {
+        std::cout << "Test 8 erfolgreich." << std::endl;
+    } else {
+        std::cout << "Test 8 fehlgeschlagen." << std::endl;
+    }
 }
 
 template <typename T>
 void Testdriver::test09(const std::string& type_name) {
-    // richtige Rechnung und dann Ergebnis prüfen
-    std::cout << "Test 9..." << std::endl;
+    bool test_successful = false;
+    Stack<T> test_stack09(type_name);
+    if (type_name == "int") {
+        int expected_result = (-8 + 9 - 1) * 45 / 3;
+        std::string calculation = "-8 9 + 1 - 45 * 3 /";
+        test_stack09.set_calculation(calculation);
+        test_stack09.process_calculation();
+        T result = test_stack09.get_result();
+        if (result == expected_result) {
+            test_successful = true;
+        }
+    } else if (type_name == "unsigned") {
+        unsigned expected_result = (851 - 87 / 2) * 9 + 5;
+        std::string calculation = "851 87 2 / - 9 * 5 +";
+        test_stack09.set_calculation(calculation);
+        test_stack09.process_calculation();
+        T result = test_stack09.get_result();
+        if (result == expected_result) {
+            test_successful = true;
+        }
+    } else if (type_name == "float") {
+        float expected_result = (5.4f - 1.0348f) * 78.74f / 4.4f + 100.7f;
+        std::string calculation = "5.4 1.0348 - 78.74 * 4.4 / 100.7 +";
+        test_stack09.set_calculation(calculation);
+        test_stack09.process_calculation();
+        T result = test_stack09.get_result();
+        if (result == expected_result) {
+            test_successful = true;
+        }
+    } else {
+        double expected_result = (53.1612676456 * 45.48789 + 7.78954) / 485.89851 - (-74.4136925);
+        std::string calculation = "53.1612676456 45.48789 * 7.78954 + 485.89851 / -74.4136925 -";
+        test_stack09.set_calculation(calculation);
+        test_stack09.process_calculation();
+        T result = test_stack09.get_result();
+        if (result == expected_result) {
+            test_successful = true;
+        }
+    }
+    
+    if (test_successful) {
+        std::cout << "Test 9 erfolgreich." << std::endl;
+    } else {
+        std::cout << "Test 9 fehlgeschlagen." << std::endl;
+    }
 }
 
 template <typename T>
 void Testdriver::test10(const std::string& type_name) {
-    // Division durch 0!
+    // Division durch 0 testen
     std::cout << "Test 10..." << std::endl;
+}
+
+template <typename T>
+void Testdriver::test11(const std::string& type_name) {
+    // einfach nur eine Zahl eingeben, das sollte auch ein korrekter Eintrag sein :)
+    std::cout << "Test 11..." << std::endl;
 }
 
 template <typename T>
@@ -347,6 +421,7 @@ void Testdriver::execute_all_tests(const std::string& type_name) {
     test08<T>(type_name);
     test09<T>(type_name);
     test10<T>(type_name);
+    test11<T>(type_name);
     std::cout << std::endl;
 }
 
