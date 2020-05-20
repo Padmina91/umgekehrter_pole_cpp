@@ -12,6 +12,8 @@ class TypesNotMatchingException : public std::exception {};
 
 class InvalidSyntaxException : public std::exception {};
 
+class InvalidResultException : public std::exception {};
+
 class InvalidNumberException : public std::exception {};
 
 class DivisionByZeroException : public std::exception {};

@@ -24,7 +24,7 @@ private:
 
 // ----------------------------------- private methods declaration ------------------------------------
     void check_vector_type_matches_type_name();
-
+    
     bool is_empty();
     
     bool has_one_element();
@@ -73,6 +73,7 @@ public:
 /**
  * Prüft, ob der übergebene String _type_name zum Datentyp des Stacks passt.
  * @tparam T (typename)
+ * @throws TypesNotMatchingException
  */
 template <typename T>
 void Stack<T>::check_vector_type_matches_type_name() {
@@ -139,21 +140,23 @@ bool Stack<T>::has_one_element() {
  */
 template <typename T>
 void Stack<T>::remove_unnecessary_whitespace() {
-    size_t position = 0;
-    while (position !=
-           std::string::npos) { // npos is the largest possible size_t. It's the return value of find_first_of() if no occurrence is found
-        position = _calculation.find_first_of("\n\t\r");
-        if (position != std::string::npos) {
-            _calculation.replace(position, 1, " "); // first, replaces all non-space whitespace by spaces
+    if (!_calculation.empty()) {
+        size_t position = 0;
+        // npos is the largest possible size_t. It's the return value of find_first_of() if no occurrence is found
+        while (position != std::string::npos) {
+            position = _calculation.find_first_of("\n\t\r");
+            if (position != std::string::npos) {
+                _calculation.replace(position, 1, " "); // first, replaces all non-space whitespace by spaces
+            }
         }
-    }
-    std::string::iterator new_end = std::unique(_calculation.begin(), _calculation.end(),
-                                                both_are_spaces); // removes all non-single spaces
-    _calculation.erase(new_end, _calculation.end()); // shortens the string
-    _calculation.erase(_calculation.find_last_not_of(' ') + 1); // crops whitespace at the end of _calculation
-    if (_calculation.find_first_not_of(' ') - 1 != std::string::npos) {
-        _calculation.erase(_calculation.find_first_not_of(' ') - 1,
-                           1); // finally crops whitespace at the beginning if necessary
+        // removes all non-single spaces
+        std::string::iterator new_end = std::unique(_calculation.begin(), _calculation.end(), both_are_spaces);
+        _calculation.erase(new_end, _calculation.end()); // shortens the string
+        _calculation.erase(_calculation.find_last_not_of(' ') + 1); // crops whitespace at the end of _calculation
+        if (_calculation.find_first_not_of(' ') - 1 != std::string::npos) {
+            // finally crops whitespace at the beginning if necessary
+            _calculation.erase(_calculation.find_first_not_of(' ') - 1, 1);
+        }
     }
 }
 
@@ -233,6 +236,7 @@ bool Stack<T>::is_correct_operator(std::string& s) {
  * Legt einen als String vorliegenden Operanden auf den Stack
  * @tparam T (typename)
  * @param single_op (std::string&)
+ * @throws InvalidNumberException
  */
 template <typename T>
 void Stack<T>::push(const std::string& single_op) {
@@ -445,6 +449,7 @@ std::string Stack<T>::get_calculation() {
  * für die Berechnung.
  * @tparam T (typename)
  * @throws InvalidSyntaxException
+ * @throws InvalidResultException
  */
 template <typename T>
 void Stack<T>::process_calculation() {
@@ -462,15 +467,15 @@ void Stack<T>::process_calculation() {
     }
     if (!has_one_element()) {
         // if there are two or more numbers left on the stack
-        throw InvalidSyntaxException();
+        throw InvalidResultException();
     }
 }
 
-// TODO: statt 0 zurück zu geben, besser eine Exception werfen.
 /**
  * Gibt das Ergebnis zurück, falls nur noch ein Element auf dem Stack liegt.
  * Sollten noch mehrere Elemente vorhanden sein, gibt die Methode 0 zurück.
  * @tparam T (typename)
+ * @throws InvalidResultException
  * @return result (T)
  */
 template <typename T>
@@ -478,7 +483,7 @@ T Stack<T>::get_result() {
     if (has_one_element()) {
         return _values[0];
     }
-    return 0;
+    throw InvalidResultException();
 }
 
 #endif //UMGEKEHRTER_POLE_CPP_STACK_HPP
